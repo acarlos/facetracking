@@ -1,0 +1,153 @@
+<!doctype html>
+<html>
+<head>
+  <meta charset="utf-8">
+  <title>tracking.js - face with camera</title>
+  <link rel="stylesheet" href="demo.css">
+  <script type="text/javascript" charset="utf-8" src="cordova.js"></script>
+  <script src="js/tracking-min.js"></script>
+  <script src="js/face-min.js"></script>
+  <script src="js/jquery-1.12.4.js"></script>
+  
+  <style>
+  video, canvas {
+    margin-left: 23px;
+    margin-top: 12px;
+    position: absolute;
+  }
+  </style>
+</head>
+<body>
+
+  <div class="demo-frame">
+    <div class="demo-container">
+      <video id="video" width="280" height="360" preload autoplay loop muted></video>
+      <canvas id="canvas" width="280" height="360"></canvas>
+    </div>
+  </div>
+  <div id="retorno" style="position: absolute; top: 405px; width:100%; margin: 1px auto; align-items: center;">
+    <img id="imgretorno" width="25%" style="display: block; margin-left: auto; margin-right: auto"/>
+  </div>
+  <div id="footer" style="position: absolute; top: 685px;">
+    <canvas id="canvasFooter" width="600" height="600"></canvas>
+  </div>
+  <script>
+
+  function getAcceleration() {
+      navigator.accelerometer.getCurrentAcceleration(
+        accelerometerSuccess, accelerometerError);
+  
+      function accelerometerSuccess(acceleration) {
+        if (acceleration.y < 7) {
+          alert('Levante o aparelho' + '\n' +
+              'Acceleration X: ' + acceleration.x + '\n' +
+              'Acceleration Y: ' + acceleration.y + '\n' +
+              'Acceleration Z: ' + acceleration.z + '\n' +
+              'Timestamp: '      + acceleration.timestamp + '\n');
+        }
+      };
+  
+      function accelerometerError() {
+        alert('onError!');
+      };
+  }
+  
+  document.addEventListener('deviceready', () => {
+    var permissions = cordova.plugins.permissions;
+    permissions.hasPermission(permissions.CAMERA, function(status) {
+      if (status.hasPermission) {
+        facetracking();
+      }
+      else {
+        // need to request camera permission
+        permissions.requestPermission(permissions.CAMERA, success, error);
+
+        function error() {
+          // camera permission not turned on
+        }
+
+        function success(status) {
+          if (status.hasPermission) {
+            facetracking();
+          }
+        }
+      }
+    });
+  });
+    function facetracking() {
+      var video = document.getElementById('video');
+      var canvas = document.getElementById('canvas');
+      var context = canvas.getContext('2d');
+
+      var canvasFooter = document.getElementById('canvasFooter');
+      canvasFooter.style.visibility = "hidden";
+      var contextFooter = canvasFooter.getContext('2d');
+
+      var tracker = new tracking.ObjectTracker('face');
+      tracker.setInitialScale(4);
+      tracker.setStepSize(2);
+      tracker.setEdgesDensity(0.1);
+
+      tracking.track('#video', tracker, { camera: true });
+      var frames = [];
+      tracker.on('track', function(event) {
+        context.clearRect(0, 0, canvas.width, canvas.height);
+        contextFooter.clearRect(0, 0, canvasFooter.width, canvasFooter.height);
+        event.data.forEach(function(rect) {
+          getAcceleration();
+          context.strokeStyle = '#006400';
+          context.lineWidth = 3;
+
+          context.strokeRect(rect.x, rect.y, rect.width, rect.height);
+          context.font = '11px Helvetica';
+          context.fillStyle = "#fff";
+          //context.fillText('x: ' + rect.x + 'px', rect.x + rect.width + 5, rect.y + 11);
+          //context.fillText('y: ' + rect.y + 'px', rect.x + rect.width + 5, rect.y + 22);
+          //contextFooter.drawImage(video, (rect.x * 2) -50, (rect.y * 2) -50, rect.width * 2, rect.height * 2, 0, 0, 140, 180);
+          contextFooter.drawImage(video, rect.x, rect.y, ((rect.width * 2) + rect.x), ((rect.height * 2) + rect.y), 0, 0, 600, 600);
+          frames.push(canvasFooter.toDataURL("image/jpeg", 1.0));
+          if (frames.length == 3) {
+            frames.forEach(element => {
+              var elem = document.createElement("input");
+              elem.setAttribute("type", "hidden");
+              elem.setAttribute("name", "faces");
+              elem.setAttribute("value", element);
+
+              /*
+              var elem = document.createElement("img");
+              elem.setAttribute("src", element);
+              //elem.setAttribute("height", "40");
+              //elem.setAttribute("width", "25%");
+              elem.setAttribute("alt", "Faces");
+              elem.setAttribute("name", "img");*/
+              document.getElementById("footer").appendChild(elem);
+              //document.getElementById('imgretorno').src = element;
+              //frames = [];
+            });
+
+            $.ajax({
+                type: 'POST',
+                url: 'https://web2face.com/facetracking/uploadFacesCompare.php',
+                data: {arr: JSON.stringify(frames)},
+                  success: function(data){
+                        var element = document.getElementsByName('faces'), index;
+
+                        for (index = element.length - 1; index >= 0; index--) {
+                            element[index].parentNode.removeChild(element[index]);
+                        }
+                        document.getElementById('imgretorno').src = data.face;
+                        //console.log("success:",data.face);
+                        frames = [];
+                  },
+                  failure: function(errMsg) {
+                        console.error("error:",errMsg);
+                  }
+                });
+          }
+        });
+      });
+    }
+  </script>
+
+</body>
+</html>
