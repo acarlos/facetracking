@@ -14,11 +14,11 @@ https://nodejs.org/en/download/
 
 3. Create a project. Name it whatever you want:  
 `cordova create <project_dir_name> <project_address> <project_display_name>`  
-**Example**: `cordova create hello com.example.hello HelloWorld`
+**Example**: `cordova create facetracking com.example.facetracking FaceTracking`
 
 4. Navigate to newly created project and **replace _www_ directory** with the one provided with this repo.
 
-4. **Add platforms** before you run emulator/build:  
+5. **Add platforms** before you run emulator/build:  
 `cordova platform add android`  
 `cordova platform add ios`  
 `cordova platform add browser`  
