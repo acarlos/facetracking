@@ -18,6 +18,7 @@ https://nodejs.org/en/download/
 `git clone https://github.com/acarlos/facetracking.git`  
 
 4. Navigate to **project's root folder**. Provided with this repo.
+`cd facetracking`
 
 5. **Add platforms** before you run emulator/build:  
 `cordova platform add android`  or `cordova platform add ios`
