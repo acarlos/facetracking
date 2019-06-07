@@ -1,5 +1,7 @@
 # facetracking
-Facetracking with crop and device position verification
+Facetracking with crop and device position verification. 
+This Apache Cordova Application uses tracking.js (https://trackingjs.com/) for face detecting .
+
 ## Tutorial
 http://web2face.com/facetracking/tutorial.html
 
