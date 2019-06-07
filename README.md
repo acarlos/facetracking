@@ -25,6 +25,7 @@ https://nodejs.org/en/download/
 
 ## Usage
 1. Navigate to **project's root folder**.  
+`cd facetracking`
 
 2. Build native app & run it on mobile device:  
 `cordova run android` or `cordova run ios`
