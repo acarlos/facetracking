@@ -14,33 +14,19 @@ https://nodejs.org/en/download/
 2. Install cordova:  
 `npm install -g cordova`
 
-3. Create a project. Name it whatever you want:  
-`cordova create <project_dir_name> <project_address> <project_display_name>`  
-**Example**: `cordova create facetracking com.example.facetracking FaceTracking`
+3. Download the project:  
+`git clone https://github.com/acarlos/facetracking.git`  
 
-4. Navigate to newly created project and **replace _www_ directory** with the one provided with this repo.
+4. Navigate to **project's root folder**. Provided with this repo.
 
 5. **Add platforms** before you run emulator/build:  
-`cordova platform add android`  
-`cordova platform add ios`  
-`cordova platform add browser`  
-**Note**: To check all platforms available run:
-`cordova platform`
-
-## Project structure
-**_hooks_**, **_node_modules_**, **_platforms_**, **_plugins_**,  **_res_** are generated automatically.  
-
-**_config.xml_** contains application description like its title, autor email, app store description, etc.  
-
-The only folder to modify is **_www_**.
+`cordova platform add android`  or `cordova platform add ios`
 
 ## Usage
 1. Navigate to **project's root folder**.  
 
 2. Build native app & run it on mobile device:  
-`cordova run android|ios|browser`  
-... or serve files on a localhost:  
-`cordova serve`
+`cordova run android` or `cordova run ios`
 
 ## Results
 ![screenshot](https://web2face.com/facetracking/Screenshot.jpg)
